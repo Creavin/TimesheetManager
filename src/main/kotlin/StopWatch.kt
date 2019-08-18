@@ -5,8 +5,6 @@
 import javafx.animation.AnimationTimer
 import javafx.beans.binding.Bindings
 import javafx.beans.property.*
-import javafx.scene.control.Button
-import javafx.scene.control.Label
 import javafx.scene.layout.VBox
 import tornadofx.*
 
@@ -26,21 +24,19 @@ class StopWatch : View() {
         return "${precedingZero(hours)} : ${precedingZero(minutes)} : ${precedingZero(seconds.toInt())}"
     }
 
-
     init{
-        val elapsedTimeLabel = Label("Default")
+        val elapsedTimeLabel = label()
+
         val time = SimpleStringProperty()
+        time.set("00 : 00 : 00")
         elapsedTimeLabel.textProperty().bind(time)
 
         val running = SimpleBooleanProperty()
 
-
         val timer = object : AnimationTimer() {
-            //private var startTime: Long = 0
             private var startTime: Long = 0
 
             override fun start() {
-                //startTime = System.currentTimeMillis()
                 startTime = System.nanoTime()
                 running.set(true)
                 super.start()
@@ -58,7 +54,7 @@ class StopWatch : View() {
             }
         }
 
-        val startStop = Button("Start Stop Button")
+        val startStop = button("Start Stop Button")
 
         startStop.textProperty().bind(
             Bindings.`when`(running)
@@ -74,10 +70,10 @@ class StopWatch : View() {
             }
         }
 
-
         with(root){
-            root += elapsedTimeLabel
-            root += startStop
+            style {
+                padding = box(20.px)
+            }
         }
 
     }
