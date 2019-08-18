@@ -1,13 +1,11 @@
 /*
     Calculates time elapsed between a user starting and completing a task
  */
-
 import javafx.animation.AnimationTimer
 import javafx.beans.binding.Bindings
 import javafx.beans.property.*
 import javafx.scene.layout.VBox
 import tornadofx.*
-
 
 class StopWatch : View() {
     override val root = VBox()
@@ -20,7 +18,8 @@ class StopWatch : View() {
         val minutes = (difference/60).toInt()
         seconds -= minutes*60
 
-        val precedingZero = fun(quantum: Int): String { return if (quantum < 60 ) "0$quantum" else "$quantum"}
+        // 9 minutes -> 09 minutes
+        val precedingZero = fun(quantum: Int): String { return if (quantum < 10 ) "0$quantum" else "$quantum"}
         return "${precedingZero(hours)} : ${precedingZero(minutes)} : ${precedingZero(seconds.toInt())}"
     }
 
@@ -47,6 +46,11 @@ class StopWatch : View() {
                 super.stop()
             }
 
+            fun resume(){
+                running.set(true)
+                super.start()
+            }
+
             override fun handle(timestamp: Long) {
                 val now = System.nanoTime()
 
@@ -54,19 +58,28 @@ class StopWatch : View() {
             }
         }
 
-        val startStop = button("Start Stop Button")
+        val startStopButton = button()
+        val resumeButton = button("Resume"){opacity = 0.5}
 
-        startStop.textProperty().bind(
+        startStopButton.textProperty().bind(
             Bindings.`when`(running)
                 .then("Stop")
                 .otherwise("Start")
         )
 
-        startStop.setOnAction {
+        startStopButton.setOnAction {
             if (running.get()) {
                 timer.stop()
+                resumeButton.opacity = 1.0
             } else {
                 timer.start()
+                resumeButton.opacity = 0.5
+            }
+        }
+
+        resumeButton.setOnAction {
+            if (!running.get()){
+                timer.resume()
             }
         }
 
@@ -77,6 +90,5 @@ class StopWatch : View() {
         }
 
     }
-
 
 }
