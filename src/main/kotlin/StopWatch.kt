@@ -10,6 +10,8 @@ import tornadofx.*
 class StopWatch : View() {
     override val root = VBox()
 
+    var times = mutableListOf<String>().observable()
+
     fun timeFormatter(difference: Long): String{
         var seconds = difference
 
@@ -67,16 +69,19 @@ class StopWatch : View() {
                 .otherwise("Start")
         )
 
+        //TODO paused time is written to list
         startStopButton.setOnAction {
             if (running.get()) {
                 timer.stop()
                 resumeButton.opacity = 1.0
+                times.add(elapsedTimeLabel.text)
             } else {
                 timer.start()
                 resumeButton.opacity = 0.5
             }
         }
 
+        //TODO fix logical error, timer continues to run while paused
         resumeButton.setOnAction {
             if (!running.get()){
                 timer.resume()
@@ -87,6 +92,7 @@ class StopWatch : View() {
             style {
                 padding = box(20.px)
             }
+            listview(times)
         }
 
     }
