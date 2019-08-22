@@ -20,7 +20,7 @@ class Application : View("Timesheet Manager") {
             }
 
             // Add tabs on demand when NewDocumentEvent is emitted
-            subscribe<NewSheetEvent> { event ->
+            subscribe<NewSheetEvent> { _ ->
                 tab("New doc") {
 
                 }

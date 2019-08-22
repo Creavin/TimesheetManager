@@ -37,8 +37,10 @@ class StopWatch : Fragment("Screen 1") {
 
         val timer = object : AnimationTimer() {
             private var startTime: Long = 0
+            var elapsedTime: Long = 0 //when the timer is paused the elapsed time is updated and the start time is reset
 
-            override fun start() {
+            override fun start() { //resets start and elapsed time
+                elapsedTime = 0
                 startTime = System.nanoTime()
                 running.set(true)
                 super.start()
@@ -46,25 +48,26 @@ class StopWatch : Fragment("Screen 1") {
 
             override fun stop() {
                 running.set(false)
+                elapsedTime += System.nanoTime() - startTime
                 super.stop()
             }
 
             fun resume(){
+                startTime = System.nanoTime() //time is updated to reflect pause
                 running.set(true)
                 super.start()
             }
 
             override fun handle(timestamp: Long) {
                 val now = System.nanoTime()
-
-                time.set( timeFormatter((now-startTime)/1000000000) ) //Dividing converts nano to seconds
+                time.set( timeFormatter((now-startTime+elapsedTime)/1000000000) )//Divide converts nano->sec
             }
         }
 
         val startStopButton = button()
-        val resumeButton = button("Resume"){opacity = 0.5}
+        val resumeButton = button("Pause"){opacity = 0.5}
 
-        //todo improve button text
+        //todo improve button text; refactor Start Stop
         startStopButton.textProperty().bind(
             Bindings.`when`(running)
                 .then("Stop")
@@ -72,28 +75,29 @@ class StopWatch : Fragment("Screen 1") {
         )
 
 
-        //FIXME paused time is written to list
         startStopButton.setOnAction {
             if (running.get()) {
-                timer.stop()
+                timer.stop() //timer is paused
                 resumeButton.opacity = 1.0
                 paused = true
             } else {
                 if (paused) {//if the timer is stopped and not paused, we're done here
                     times.add(elapsedTimeLabel.text)
                     paused = false
-
                 }
-                timer.start()
+                timer.start()  //timer is started / restarted
                 resumeButton.opacity = 0.5
             }
         }
 
-        //FIXME fix logical error, timer continues to run while paused
         resumeButton.setOnAction {
             if (!running.get()){
                 timer.resume()
                 resumeButton.opacity = 0.5
+            } else {
+                resumeButton.text = "resume"
+                timer.stop() //timer is paused
+                paused = true
             }
         }
 
