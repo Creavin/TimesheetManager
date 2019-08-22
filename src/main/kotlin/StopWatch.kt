@@ -7,7 +7,7 @@ import javafx.beans.property.*
 import javafx.scene.layout.VBox
 import tornadofx.*
 
-class StopWatch : View() {
+class StopWatch : Fragment("Screen 1") {
     override val root = VBox()
 
     var times = mutableListOf<String>().observable()
@@ -33,6 +33,7 @@ class StopWatch : View() {
         elapsedTimeLabel.textProperty().bind(time)
 
         val running = SimpleBooleanProperty()
+        var paused = false
 
         val timer = object : AnimationTimer() {
             private var startTime: Long = 0
@@ -63,28 +64,36 @@ class StopWatch : View() {
         val startStopButton = button()
         val resumeButton = button("Resume"){opacity = 0.5}
 
+        //todo improve button text
         startStopButton.textProperty().bind(
             Bindings.`when`(running)
                 .then("Stop")
                 .otherwise("Start")
         )
 
-        //TODO paused time is written to list
+
+        //FIXME paused time is written to list
         startStopButton.setOnAction {
             if (running.get()) {
                 timer.stop()
                 resumeButton.opacity = 1.0
-                times.add(elapsedTimeLabel.text)
+                paused = true
             } else {
+                if (paused) {//if the timer is stopped and not paused, we're done here
+                    times.add(elapsedTimeLabel.text)
+                    paused = false
+
+                }
                 timer.start()
                 resumeButton.opacity = 0.5
             }
         }
 
-        //TODO fix logical error, timer continues to run while paused
+        //FIXME fix logical error, timer continues to run while paused
         resumeButton.setOnAction {
             if (!running.get()){
                 timer.resume()
+                resumeButton.opacity = 0.5
             }
         }
 

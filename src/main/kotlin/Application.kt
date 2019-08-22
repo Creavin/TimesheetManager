@@ -1,19 +1,35 @@
+import javafx.scene.paint.Stop
 import tornadofx.*
+import tornadofx.Stylesheet.Companion.tab
 
-class Application : View() {
-    private val mainView: StopWatch by inject()
+
+
+class Application : View("Timesheet Manager") {
 
     override val root = borderpane{
         left = vbox {
-            button("REFRESH")
-            button("COMMIT")
+            button("New Timesheet").setOnAction{
+                fire(NewSheetEvent("foo"))
+            }
+
+            button("Open Timesheet")
         }
-        center = mainView.root
+        center = tabpane{
+            tab<StopWatch>(){
+
+            }
+
+            // Add tabs on demand when NewDocumentEvent is emitted
+            subscribe<NewSheetEvent> { event ->
+                tab("New doc") {
+
+                }
+            }
+        }
     }
 
-    init {
 
-
-    }
 
 }
+
+
