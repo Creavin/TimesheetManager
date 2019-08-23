@@ -1,4 +1,4 @@
 import tornadofx.EventBus.RunOn.*
 import tornadofx.FXEvent
 
-class NewSheetEvent(var message: String) : FXEvent()
+class NewSheetEvent(var message: String = "New Sheet") : FXEvent()

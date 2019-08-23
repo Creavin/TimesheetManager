@@ -22,7 +22,8 @@ class NewModalWindow() : Fragment() {
         }
 
         button("save").setOnAction {
-            fire(NewSheetEvent(newSheetName.get()))
+            var sheetName = if (newSheetName.get().isNullOrBlank()) "New Sheet" else newSheetName.get()
+            fire(NewSheetEvent(sheetName))
             close()
         }
 
