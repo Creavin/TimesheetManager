@@ -10,14 +10,16 @@ import tornadofx.*
 class StopWatch : Fragment("Screen 1") {
     override val root = VBox()
 
-    val time = SimpleStringProperty()
+    val time = SimpleStringProperty() //stores current time as string
+    var times = mutableListOf<String>().observable() //list of times
+    private val defaultTime = "00 : 00 : 00"
 
+    /* Stopwatch states */
     val running = SimpleBooleanProperty()
     var paused = SimpleBooleanProperty()
 
-    var times = mutableListOf<String>().observable()
-    private val defaultTime = "00 : 00 : 00"
 
+    /* Formats time string */
     fun timeFormatter(difference: Long): String{
         var seconds = difference
 
@@ -33,7 +35,7 @@ class StopWatch : Fragment("Screen 1") {
 
     init{
         time.set(defaultTime)
-        val elapsedTimeLabel = label()
+        val elapsedTimeLabel = label() //displays elapsed time
         val startStopButton = button()
         val resumeButton = button()
 
@@ -47,24 +49,24 @@ class StopWatch : Fragment("Screen 1") {
                 elapsedTime = 0
                 startTime = System.nanoTime()
                 running.set(true)
-                paused.set(false)
                 super.start()
             }
 
             override fun stop() {
                 running.set(false)
-                elapsedTime += System.nanoTime() - startTime
+                paused.set(false)
                 super.stop()
             }
 
             fun pause() {
+                paused.set(true)
                 elapsedTime += System.nanoTime() - startTime
                 super.stop()
             }
 
             fun resume(){
+                paused.set(false)
                 startTime = System.nanoTime() //time is updated to reflect pause
-                running.set(true)
                 super.start()
             }
 
@@ -92,17 +94,15 @@ class StopWatch : Fragment("Screen 1") {
                 times.add(elapsedTimeLabel.text)
                 time.set(defaultTime)
             } else {
-                timer.start()  //timer is started / restarted
+                timer.start()
             }
         }
 
         resumeButton.setOnAction {
             if (paused.get()){
                 timer.resume()
-                paused.set(false)
-            } else if (!paused.get()){
-                timer.pause() //timer is paused
-                paused.set(true)
+            } else if (!paused.get() && running.get()){
+                timer.pause()
             }
         }
 
