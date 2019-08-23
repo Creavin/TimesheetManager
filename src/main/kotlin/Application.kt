@@ -10,6 +10,8 @@ class Application : View("Timesheet Manager") {
         left = vbox {
             button("New Timesheet").setOnAction{
                 fire(NewSheetEvent("foo"))
+                //openInternalWindow<Editor>()
+
             }
 
             button("Open Timesheet")

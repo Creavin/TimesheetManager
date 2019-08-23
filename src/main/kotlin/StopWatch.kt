@@ -10,7 +10,13 @@ import tornadofx.*
 class StopWatch : Fragment("Screen 1") {
     override val root = VBox()
 
+    val time = SimpleStringProperty()
+
+    val running = SimpleBooleanProperty()
+    var paused = SimpleBooleanProperty()
+
     var times = mutableListOf<String>().observable()
+    private val defaultTime = "00 : 00 : 00"
 
     fun timeFormatter(difference: Long): String{
         var seconds = difference
@@ -26,14 +32,12 @@ class StopWatch : Fragment("Screen 1") {
     }
 
     init{
+        time.set(defaultTime)
         val elapsedTimeLabel = label()
+        val startStopButton = button()
+        val resumeButton = button()
 
-        val time = SimpleStringProperty()
-        time.set("00 : 00 : 00")
         elapsedTimeLabel.textProperty().bind(time)
-
-        val running = SimpleBooleanProperty()
-        var paused = false
 
         val timer = object : AnimationTimer() {
             private var startTime: Long = 0
@@ -43,11 +47,17 @@ class StopWatch : Fragment("Screen 1") {
                 elapsedTime = 0
                 startTime = System.nanoTime()
                 running.set(true)
+                paused.set(false)
                 super.start()
             }
 
             override fun stop() {
                 running.set(false)
+                elapsedTime += System.nanoTime() - startTime
+                super.stop()
+            }
+
+            fun pause() {
                 elapsedTime += System.nanoTime() - startTime
                 super.stop()
             }
@@ -64,40 +74,35 @@ class StopWatch : Fragment("Screen 1") {
             }
         }
 
-        val startStopButton = button()
-        val resumeButton = button("Pause"){opacity = 0.5}
-
-        //todo improve button text; refactor Start Stop
         startStopButton.textProperty().bind(
             Bindings.`when`(running)
                 .then("Stop")
                 .otherwise("Start")
         )
 
+        resumeButton.textProperty().bind(
+            Bindings.`when`(paused)
+                .then("Resume")
+                .otherwise("Pause")
+        )
 
         startStopButton.setOnAction {
             if (running.get()) {
-                timer.stop() //timer is paused
-                resumeButton.opacity = 1.0
-                paused = true
+                timer.stop()
+                times.add(elapsedTimeLabel.text)
+                time.set(defaultTime)
             } else {
-                if (paused) {//if the timer is stopped and not paused, we're done here
-                    times.add(elapsedTimeLabel.text)
-                    paused = false
-                }
                 timer.start()  //timer is started / restarted
-                resumeButton.opacity = 0.5
             }
         }
 
         resumeButton.setOnAction {
-            if (!running.get()){
+            if (paused.get()){
                 timer.resume()
-                resumeButton.opacity = 0.5
-            } else {
-                resumeButton.text = "resume"
-                timer.stop() //timer is paused
-                paused = true
+                paused.set(false)
+            } else if (!paused.get()){
+                timer.pause() //timer is paused
+                paused.set(true)
             }
         }
 
