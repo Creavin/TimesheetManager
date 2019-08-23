@@ -7,7 +7,7 @@ import javafx.beans.property.*
 import javafx.scene.layout.VBox
 import tornadofx.*
 
-class StopWatch : Fragment("Screen 1") {
+class StopWatch: Fragment("Default") {
     override val root = VBox()
 
     val time = SimpleStringProperty() //stores current time as string

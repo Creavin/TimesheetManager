@@ -1,3 +1,4 @@
+import javafx.beans.property.SimpleStringProperty
 import javafx.scene.paint.Stop
 import tornadofx.*
 import tornadofx.Stylesheet.Companion.tab
@@ -5,26 +6,27 @@ import tornadofx.Stylesheet.Companion.tab
 
 
 class Application : View("Timesheet Manager") {
+    val name = SimpleStringProperty()
+
 
     override val root = borderpane{
         left = vbox {
             button("New Timesheet").setOnAction{
-                fire(NewSheetEvent("foo"))
-                //openInternalWindow<Editor>()
-
+                //openInternalWindow<NewModalWindow>(modal = true)
+                find<NewModalWindow>().openModal()
             }
 
             button("Open Timesheet")
         }
         center = tabpane{
-            tab<StopWatch>(){
-
+            tab<StopWatch>{
             }
 
             // Add tabs on demand when NewDocumentEvent is emitted
-            subscribe<NewSheetEvent> { _ ->
-                tab("New doc") {
-
+            subscribe<NewSheetEvent> { event ->
+                tab<StopWatch>{
+                    textProperty().unbind() //required to change tab title
+                    text = event.message
                 }
             }
         }
