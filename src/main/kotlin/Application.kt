@@ -2,12 +2,11 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.scene.paint.Stop
 import tornadofx.*
 import tornadofx.Stylesheet.Companion.tab
-
+import java.io.File
 
 
 class Application : View("Timesheet Manager") {
     val name = SimpleStringProperty()
-
 
     override val root = borderpane{
         left = vbox {
@@ -16,10 +15,16 @@ class Application : View("Timesheet Manager") {
                 find<NewModalWindow>().openModal()
             }
 
-            button("Open Timesheet")
+            button("Write to file").setOnAction {
+                var newFile = File("tmp.text")
+                newFile.writeText("Hello there")
+
+            }
         }
         center = tabpane{
             tab<StopWatch>{
+
+
             }
 
             // Add tabs on demand when NewDocumentEvent is emitted
@@ -30,6 +35,10 @@ class Application : View("Timesheet Manager") {
                 }
             }
         }
+    }
+
+    init {
+        print(root.center.getToggleGroup())
     }
 
 
