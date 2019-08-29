@@ -13,6 +13,7 @@ class StopWatch: Fragment("Default") {
     val time = SimpleStringProperty() //stores current time as string
     var times = mutableListOf<String>().observable() //list of times
     private val defaultTime = "00 : 00 : 00"
+    var lview = listview(times)
 
     /* Stopwatch states */
     val running = SimpleBooleanProperty()
@@ -110,7 +111,7 @@ class StopWatch: Fragment("Default") {
             style {
                 padding = box(20.px)
             }
-            listview(times)
+            lview
         }
 
     }

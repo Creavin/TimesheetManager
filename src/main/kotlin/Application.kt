@@ -1,12 +1,51 @@
 import javafx.beans.property.SimpleStringProperty
+import javafx.collections.ObservableList
+import javafx.scene.control.Tab
 import javafx.scene.paint.Stop
 import tornadofx.*
 import tornadofx.Stylesheet.Companion.tab
 import java.io.File
+import java.lang.Thread.sleep
+import java.util.*
+import kotlin.reflect.KMutableProperty
 
 
 class Application : View("Timesheet Manager") {
     val name = SimpleStringProperty()
+
+    var mainTab: Tab? = null
+
+    val mainTabPane = tabpane{
+        mainTab = tab("") {
+            var sw = StopWatch()
+            content = sw.root
+
+            textProperty().unbind() //required to change tab title
+            text = "Hello"
+
+            subscribe<NewSheetEvent> { event ->
+                print(sw.lview.items)
+            }
+        }
+
+
+        tab<StopWatch>{
+            textProperty().unbind() //required to change tab title
+            text = "there"
+        }
+        tab<StopWatch>{
+            textProperty().unbind() //required to change tab title
+            text = "General"
+        }
+
+        // Add tabs on demand when NewDocumentEvent is emitted
+        subscribe<NewSheetEvent> { event ->
+            tab<StopWatch>{
+                textProperty().unbind() //required to change tab title
+                text = event.message
+            }
+        }
+    }
 
     override val root = borderpane{
         left = vbox {
@@ -21,24 +60,11 @@ class Application : View("Timesheet Manager") {
 
             }
         }
-        center = tabpane{
-            tab<StopWatch>{
-
-
-            }
-
-            // Add tabs on demand when NewDocumentEvent is emitted
-            subscribe<NewSheetEvent> { event ->
-                tab<StopWatch>{
-                    textProperty().unbind() //required to change tab title
-                    text = event.message
-                }
-            }
-        }
+        center = mainTabPane
     }
 
     init {
-        print(root.center.getToggleGroup())
+        //mainTab?.content.getChildList().
     }
 
 
