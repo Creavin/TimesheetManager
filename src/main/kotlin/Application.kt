@@ -23,26 +23,21 @@ class Application : View("Timesheet Manager") {
             textProperty().unbind() //required to change tab title
             text = "Hello"
 
-            subscribe<NewSheetEvent> { event ->
+            subscribe<SaveTabEvent> { event ->
                 print(sw.lview.items)
             }
         }
 
 
-        tab<StopWatch>{
-            textProperty().unbind() //required to change tab title
-            text = "there"
-        }
-        tab<StopWatch>{
-            textProperty().unbind() //required to change tab title
-            text = "General"
-        }
-
         // Add tabs on demand when NewDocumentEvent is emitted
         subscribe<NewSheetEvent> { event ->
-            tab<StopWatch>{
-                textProperty().unbind() //required to change tab title
-                text = event.message
+            tab(event.message){
+                var sw = StopWatch()
+                content = sw.root
+
+                subscribe<SaveTabEvent> { event ->
+                    print(sw.lview.items)
+                }
             }
         }
     }
@@ -55,9 +50,9 @@ class Application : View("Timesheet Manager") {
             }
 
             button("Write to file").setOnAction {
+                fire(SaveTabEvent())
                 var newFile = File("tmp.text")
                 newFile.writeText("Hello there")
-
             }
         }
         center = mainTabPane
@@ -65,6 +60,9 @@ class Application : View("Timesheet Manager") {
 
     init {
         //mainTab?.content.getChildList().
+        subscribe<SaveTabEvent> { _ ->
+            print(mainTabPane.selectionModel.selectedIndex)
+        }
     }
 
 
