@@ -4,6 +4,7 @@
 import javafx.animation.AnimationTimer
 import javafx.beans.binding.Bindings
 import javafx.beans.property.*
+import javafx.scene.control.ListView
 import javafx.scene.layout.VBox
 import tornadofx.*
 
@@ -13,7 +14,8 @@ class StopWatch: Fragment("Default") {
     val time = SimpleStringProperty() //stores current time as string
     var times = mutableListOf<String>().observable() //list of times
     private val defaultTime = "00 : 00 : 00"
-    var lview = listview(times)
+    val listOfTimes: ListView<String>
+
 
     /* Stopwatch states */
     val running = SimpleBooleanProperty()
@@ -39,6 +41,7 @@ class StopWatch: Fragment("Default") {
         val elapsedTimeLabel = label() //displays elapsed time
         val startStopButton = button()
         val resumeButton = button()
+        listOfTimes = listview(times)
 
         elapsedTimeLabel.textProperty().bind(time)
 
@@ -111,7 +114,7 @@ class StopWatch: Fragment("Default") {
             style {
                 padding = box(20.px)
             }
-            lview
+            listOfTimes
         }
 
     }
