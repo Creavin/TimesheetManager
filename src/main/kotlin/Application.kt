@@ -33,6 +33,7 @@ class Application : View("Timesheet Manager") {
         }
     }
 
+
     override val root = borderpane{
         left = vbox {
             button("New Timesheet").setOnAction{
